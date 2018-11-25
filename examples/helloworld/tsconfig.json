@@ -1,12 +1,11 @@
 {
   "extends": "../../node_modules/@magicspace/configs/tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "socket.io"],
     "lib": ["esnext"],
-    "declaration": true,
+    "types": ["node", "socket.io"],
     "experimentalDecorators": true,
 
     "rootDir": ".",
-    "outDir": "../../bld/library"
+    "noEmit": true
   }
 }
