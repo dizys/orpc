@@ -67,8 +67,8 @@ export class RPCServer<Schema extends RPCSchema> {
     return this.serviceMap.delete(name);
   }
 
-  private prepareSchema(rpcSchema: SchemaImplement<Schema>): void {
-    for (let [key, service] of Object.entries(rpcSchema)) {
+  private prepareSchema(rpcImplement: SchemaImplement<Schema>): void {
+    for (let [key, service] of Object.entries(rpcImplement)) {
       this.register(key, service);
     }
   }

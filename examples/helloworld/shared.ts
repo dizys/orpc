@@ -4,6 +4,6 @@ export interface HelloServicePrototype extends ServicePrototype {
   say(name: string): string;
 }
 
-export interface MyRPCSchema extends RPCSchema {
+export interface IMyRPC extends RPCSchema {
   hello: HelloServicePrototype;
 }

@@ -1,6 +1,6 @@
 import {RPCServer} from '../../bld/library';
 
-import {HelloServicePrototype, MyRPCSchema} from './shared';
+import {HelloServicePrototype, IMyRPC} from './shared';
 
 class HelloService implements HelloServicePrototype {
   say(name: string): string {
@@ -8,12 +8,12 @@ class HelloService implements HelloServicePrototype {
   }
 }
 
-let rpcSchema: MyRPCSchema = {
+let myRPC: IMyRPC = {
   hello: new HelloService(),
 };
 
 async function main(): Promise<void> {
-  let server = new RPCServer(rpcSchema);
+  let server = new RPCServer(myRPC);
 
   server.start(8013);
 }
