@@ -1,3 +1,5 @@
+[![NPM Package](https://badge.fury.io/js/orpc.svg)](https://www.npmjs.com/package/orpc) [![Build Status](https://travis-ci.org/dizys/orpc.svg?branch=master)](https://travis-ci.org/dizys/orpc)
+
 # orpc
 
 The Node.js and browser RPC library built on top of socket.io
