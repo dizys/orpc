@@ -2,7 +2,7 @@
   "extends": "../node_modules/@magicspace/configs/tsconfig.json",
   "compilerOptions": {
     "lib": ["esnext", "dom", "dom.iterable"],
-    "types": ["node", "jest", "socket.io"],
+    "types": ["node", "jest"],
     "experimentalDecorators": true,
 
     "rootDir": ".",

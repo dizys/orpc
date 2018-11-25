@@ -12,6 +12,7 @@ bld/
 dist/
 .cache/
 *.tgz
+out/
 
 # Debugging files
 
