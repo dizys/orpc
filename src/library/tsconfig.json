@@ -1,0 +1,10 @@
+{
+  "extends": "../../node_modules/@magicspace/configs/tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "experimentalDecorators": true,
+
+    "rootDir": ".",
+    "outDir": "../../bld/library"
+  }
+}
