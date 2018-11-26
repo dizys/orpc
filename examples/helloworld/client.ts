@@ -1,3 +1,7 @@
+/**
+ * ts-node --transpileOnly --project examples/helloworld/tsconfig.json examples/helloworld/client.ts
+ */
+
 import {createClient} from '../../bld/library';
 
 import {IMyRPC} from './shared';

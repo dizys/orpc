@@ -13,9 +13,11 @@ import {SocketIOClient} from './socket-io-client';
 
 type ServiceMethod<T = any> = (...args: any[]) => T;
 
-type PromisifyFunction<F extends ServiceMethod> = (
-  ...params: Parameters<F>
-) => Promise<ReturnType<F>>;
+type PromisifyFunction<F extends ServiceMethod> = ReturnType<F> extends Promise<
+  any
+>
+  ? F
+  : (...params: Parameters<F>) => Promise<ReturnType<F>>;
 
 type SelectOutMethodAndPromisify<S extends ServicePrototype> = {
   [K in keyof S]: S[K] extends ServiceMethod ? PromisifyFunction<S[K]> : never

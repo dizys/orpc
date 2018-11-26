@@ -1,3 +1,7 @@
+/**
+ * ts-node --transpileOnly --project examples/helloworld/tsconfig.json examples/helloworld/server.ts
+ */
+
 import {RPCServer} from '../../bld/library';
 
 import {HelloServicePrototype, IMyRPC} from './shared';

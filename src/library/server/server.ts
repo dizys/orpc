@@ -43,12 +43,6 @@ export class RPCServer<Schema extends RPCSchema> {
     service: ServiceConstructor,
     initializeForEachClient?: boolean,
   ): void;
-  register<K extends keyof Schema>(
-    name: K,
-    service: ServiceConstructor<Schema[K]>,
-    initializeForEachClient?: boolean,
-  ): void;
-  register<K extends keyof Schema>(name: K, service: Schema[K]): void;
   register(name: string, service: object): void;
   register(
     name: string,
@@ -62,7 +56,6 @@ export class RPCServer<Schema extends RPCSchema> {
     }
   }
 
-  unregister(name: string | keyof Schema): boolean;
   unregister(name: string): boolean {
     return this.serviceMap.delete(name);
   }
