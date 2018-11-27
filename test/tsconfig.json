@@ -4,6 +4,7 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "types": ["node", "jest"],
     "experimentalDecorators": true,
+    "skipLibCheck": true,
 
     "rootDir": ".",
     "noEmit": true
