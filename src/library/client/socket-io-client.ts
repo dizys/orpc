@@ -7,6 +7,10 @@ export class SocketIOClient {
     this.socket = Socket(url);
   }
 
+  get connected(): boolean {
+    return this.socket.connected;
+  }
+
   open(): void {
     this.socket.open();
   }
