@@ -80,7 +80,7 @@ export class RPCServer<Schema extends RPCSchema = any> {
         }
 
         if (!serviceInstance) {
-          let response = error(callUUID, `Service ${service} not found`);
+          let response = error(callUUID, `Service '${service}' not found`);
           socket.emit('respond', response);
 
           return;
@@ -137,5 +137,5 @@ async function executeService(
     return service[method](...params);
   }
 
-  throw new Error(`Method '${method}' not found.`);
+  throw new Error(`Method '${method}' not found`);
 }

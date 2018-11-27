@@ -15,5 +15,8 @@ export interface ServerInfo {
 export interface GatewayConfig {
   servers: ServerInfo[];
   loadBalancer?: LoadBalancer;
+  downgrade?: boolean;
+  downgradeSteps?: number;
+  downgradeAtAnyError?: boolean;
   log?: LogConfig;
 }
