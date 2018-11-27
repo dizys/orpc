@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "The Node.js and browser RPC library built on top of socket.io",
+  "description": "The type-safe Node.js and browser RPC library built on top of socket.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/dizys/orpc"
@@ -13,6 +13,12 @@
     "name": "Dizy",
     "email": "zengziyang@mufan.com"
   },
+  "keywords": [
+    "orpc",
+    "rpc",
+    "type-safe",
+    "typescript"
+  ],
   "license": "MIT",
   "scripts": {
     "build:library": "tslint -p src/library && rimraf bld/library && tsc -p src/library",
