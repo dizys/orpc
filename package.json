@@ -16,6 +16,7 @@
   "keywords": [
     "orpc",
     "rpc",
+    "socket.io",
     "type-safe",
     "typescript"
   ],
