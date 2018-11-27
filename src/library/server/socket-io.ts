@@ -17,6 +17,7 @@ export class SocketIOServer {
   }
 
   stop(): void {
+    this.socket.close();
     this.http.close();
   }
 }
