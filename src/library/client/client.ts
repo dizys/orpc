@@ -46,6 +46,14 @@ export class Client {
     this.initializeSocketIO();
   }
 
+  open(): void {
+    this.socketIO.open();
+  }
+
+  close(): void {
+    this.socketIO.close();
+  }
+
   async call(
     service: string,
     method: string,

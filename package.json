@@ -19,7 +19,7 @@
     "typecheck:test": "tsc -p test",
     "lint:library": "tslint -p src/library",
     "lint:test": "tslint -p test",
-    "test:library": "yarn build:library && yarn lint:library && jest",
+    "test:library": "yarn build:library && yarn lint:library && jest --detectOpenHandles",
     "test:test": "yarn typecheck:test && yarn lint:test",
     "test": "yarn test:library && yarn test:test"
   },

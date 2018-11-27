@@ -17,7 +17,7 @@ export type SchemaImplement<Schema> =
   | {[K in keyof Schema]: InstanceAndClass<Schema[K]>}
   | {};
 
-export class RPCServer<Schema extends RPCSchema> {
+export class RPCServer<Schema extends RPCSchema = any> {
   socketIO: SocketIOServer;
 
   private serviceMap = new Map<string, Service>();
