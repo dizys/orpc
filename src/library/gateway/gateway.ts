@@ -2,6 +2,7 @@ import {RPCClient, createClient} from '../client';
 import {SocketIOServer, error} from '../server';
 import {CallData} from '../shared';
 
+import {AOCGovernor} from './aoc-governor';
 import {GatewayConfig} from './config';
 import {evenLoadBalancer} from './load-balancer';
 import {Log} from './log';
@@ -28,6 +29,8 @@ export class Gateway {
   private serverMap!: Map<string, RunningServerInfo>;
 
   private dynamicServerMap!: Map<string, DynamicRunningServerInfo>;
+
+  private aoc!: AOCGovernor;
 
   private loadBalanceSequence!: string[];
 
@@ -61,6 +64,7 @@ export class Gateway {
   private initialize(): void {
     this.initializeLog();
     this.initializeClients();
+    this.initializeAOCGovernance();
     this.generateLoadBalanceSequence();
     this.initializeSocketIO();
   }
@@ -82,9 +86,18 @@ export class Gateway {
       this.dynamicServerMap.set(url, {url, weight, sleepTimeBeforeRevive: 0});
 
       client.$portal.socketIO.on('disconnection', () => {
-        this.downgradeServer(url, 0);
+        this.aoc.downgradeServer(url, 0);
       });
     }
+  }
+
+  private initializeAOCGovernance(): void {
+    this.aoc = new AOCGovernor(
+      this.config,
+      this.serverMap,
+      this.dynamicServerMap,
+      () => this.generateLoadBalanceSequence(),
+    );
   }
 
   private generateLoadBalanceSequence(): void {
@@ -109,7 +122,7 @@ export class Gateway {
       socket.on('call', async (service: string, data: CallData) => {
         let {callUUID} = data;
 
-        this.downgradeRevive();
+        this.aoc.reviveServer();
 
         let item = this.getNextItemInLoadBalanceSequence();
 
@@ -123,13 +136,13 @@ export class Gateway {
 
         try {
           await client.$portal.call(service, data);
-          this.upgradeServer(url);
+          this.aoc.upgradeServer(url);
         } catch (_error) {
           if (
             _error instanceof Error &&
             this.shouldErrorCauseDownGrade(_error)
           ) {
-            this.downgradeServer(url);
+            this.aoc.downgradeServer(url);
           }
 
           let response = error(callUUID, _error);
@@ -172,74 +185,5 @@ export class Gateway {
     }
 
     return false;
-  }
-
-  private adjustServerWeight(
-    url: string,
-    tend: 'down' | 'up' = 'down',
-    toWeight?: number,
-  ) {
-    if (this.config.downgrade === false) {
-      return;
-    }
-
-    let serverOrigin = this.serverMap.get(url);
-    let server = this.dynamicServerMap.get(url);
-
-    if (!serverOrigin || !server || serverOrigin.weight === server.weight) {
-      return;
-    }
-
-    if (typeof toWeight === 'number') {
-      server.weight = toWeight;
-    } else {
-      let stepCount = this.config.downgradeTolerantTime || 3;
-
-      let step = Math.ceil(serverOrigin.weight / stepCount);
-
-      if (tend === 'down') {
-        server.weight -= step;
-      } else {
-        server.weight += step;
-      }
-
-      if (server.weight < 0) {
-        server.weight = 0;
-      } else if (server.weight > serverOrigin.weight) {
-        server.weight = serverOrigin.weight;
-      }
-    }
-
-    this.generateLoadBalanceSequence();
-  }
-
-  private downgradeServer(url: string, toWeight?: number): void {
-    this.adjustServerWeight(url, 'down', toWeight);
-  }
-
-  private upgradeServer(url: string, toWeight?: number): void {
-    this.adjustServerWeight(url, 'up', toWeight);
-  }
-
-  private downgradeRevive(): void {
-    if (this.config.downgrade === false) {
-      return;
-    }
-
-    let timeLimit = this.config.downgradeDeadSleepTime || 5;
-
-    let servers = Array.from(this.dynamicServerMap.values());
-
-    for (let server of servers) {
-      if (server.weight === 0) {
-        server.sleepTimeBeforeRevive++;
-
-        if (server.sleepTimeBeforeRevive > timeLimit) {
-          this.upgradeServer(server.url);
-
-          server.sleepTimeBeforeRevive -= 2;
-        }
-      }
-    }
   }
 }
