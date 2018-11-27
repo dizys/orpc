@@ -20,7 +20,9 @@ export class Log {
   }
 
   debug(...args: any[]): void {
-    this.log('debug', '[debug]', ...args);
+    if (this.config && this.config.debug) {
+      this.log('debug', '[debug]', ...args);
+    }
   }
 
   error(...args: any[]): void {

@@ -38,7 +38,7 @@ export interface CallInfo {
 export class Client {
   socketIO: SocketIOClient;
 
-  callInfoSet = new Map<string, CallInfo>();
+  private callInfoSet = new Map<string, CallInfo>();
 
   constructor(url?: string) {
     this.socketIO = new SocketIOClient(url);
@@ -54,11 +54,18 @@ export class Client {
     this.socketIO.close();
   }
 
+  async call(service: string, data: CallData): Promise<any>;
   async call(
     service: string,
     method: string,
     params: any[],
     options: CallOptions,
+  ): Promise<any>;
+  async call(
+    service: string,
+    method: string | CallData,
+    params?: any[],
+    options?: CallOptions,
   ): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       if (!this.socketIO.connected) {
@@ -68,12 +75,15 @@ export class Client {
 
       let callUUID = uuid();
 
-      let callData: CallData = {
-        callUUID,
-        method,
-        params,
-        options,
-      };
+      let callData: CallData =
+        typeof method === 'object'
+          ? method
+          : {
+              callUUID,
+              method,
+              params,
+              options,
+            };
 
       let callInfo: CallInfo = {callUUID, resolve, reject};
 
