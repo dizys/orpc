@@ -19,5 +19,9 @@ export function success(callUUID: string, body?: any): RespondData {
 }
 
 export function error(callUUID: string, message: any): RespondData {
+  if (message instanceof Error) {
+    ({message} = message);
+  }
+
   return generateRespond(callUUID, RespondCode.failure, message);
 }

@@ -84,9 +84,8 @@ export class Client {
 
       switch (code) {
         case RespondCode.failure:
-          reject(body);
+          reject(new Error(body));
           break;
-        default:
         case RespondCode.success:
           resolve(body);
           break;
