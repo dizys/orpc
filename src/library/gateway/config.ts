@@ -4,16 +4,12 @@ export interface LogConfig {
   enable?: boolean;
 }
 
-export interface GatewayConfig {
-  log: LogConfig;
+export interface ServerInfo {
+  url: string;
+  weight?: number;
 }
 
-export function createConfigProxy(config: GatewayConfig): GatewayConfig {
-  let handler: ProxyHandler<GatewayConfig> = {
-    get(_target, _name) {
-      return undefined;
-    },
-  };
-
-  return new Proxy(config, handler);
+export interface GatewayConfig {
+  servers: ServerInfo[];
+  log?: LogConfig;
 }

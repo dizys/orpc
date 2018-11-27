@@ -1,11 +1,26 @@
-import {GatewayConfig, createConfigProxy} from './config';
+import {RPCClient} from '../client';
+
+import {GatewayConfig} from './config';
+import {Log} from './log';
+import {ProxyServer} from './proxy';
+import {printWelcome} from './utils';
 
 export class Gateway {
-  private config: GatewayConfig;
+  private log: Log;
 
-  constructor(config: GatewayConfig) {
-    this.config = createConfigProxy(config);
+  private serverMap = new Map<string, RPCClient<any>>();
 
-    console.log(this.config.log.enable);
+  private proxyServer = new ProxyServer();
+
+  constructor(private config: GatewayConfig) {
+    this.log = new Log(this.config.log);
+
+    printWelcome();
+
+    this.log.info('Gateway initialized.');
+  }
+
+  start(port?: number, hostname?: string): void {
+    this.proxyServer.start(port, hostname);
   }
 }
