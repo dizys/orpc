@@ -16,7 +16,8 @@ export interface GatewayConfig {
   servers: ServerInfo[];
   loadBalancer?: LoadBalancer;
   downgrade?: boolean;
-  downgradeSteps?: number;
   downgradeAtAnyError?: boolean;
+  downgradeTolerantTime?: number;
+  downgradeDeadSleepTime?: number;
   log?: LogConfig;
 }

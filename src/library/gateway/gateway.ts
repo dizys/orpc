@@ -7,8 +7,8 @@ import {evenLoadBalancer} from './load-balancer';
 import {Log} from './log';
 import {printWelcome} from './utils';
 
-const REGX_SERVICE_NOT_FOUND = /^Service '(.*?)' not found$/;
-const REGX_METHOD_NOT_FOUND = /^Method '(.*?)' not found$/;
+const REG_EX_SERVICE_NOT_FOUND = /^Service '(.*?)' not found$/;
+const REG_EX_METHOD_NOT_FOUND = /^Method '(.*?)' not found$/;
 
 export interface RunningServerInfo {
   url: string;
@@ -19,6 +19,7 @@ export interface RunningServerInfo {
 export interface DynamicRunningServerInfo {
   url: string;
   weight: number;
+  sleepTimeBeforeRevive: number;
 }
 
 export class Gateway {
@@ -60,7 +61,7 @@ export class Gateway {
   private initialize(): void {
     this.initializeLog();
     this.initializeClients();
-    this.initializeLoadBalanceSequence();
+    this.generateLoadBalanceSequence();
     this.initializeSocketIO();
   }
 
@@ -78,11 +79,15 @@ export class Gateway {
       let client = createClient(url);
 
       this.serverMap.set(url, {url, client, weight});
-      this.dynamicServerMap.set(url, {url, weight});
+      this.dynamicServerMap.set(url, {url, weight, sleepTimeBeforeRevive: 0});
+
+      client.$portal.socketIO.on('disconnection', () => {
+        this.downgradeServer(url, 0);
+      });
     }
   }
 
-  private initializeLoadBalanceSequence(): void {
+  private generateLoadBalanceSequence(): void {
     let servers = Array.from(this.dynamicServerMap.values());
     let loadBalancer = this.config.loadBalancer;
 
@@ -104,6 +109,8 @@ export class Gateway {
       socket.on('call', async (service: string, data: CallData) => {
         let {callUUID} = data;
 
+        this.downgradeRevive();
+
         let item = this.getNextItemInLoadBalanceSequence();
 
         if (!item) {
@@ -116,6 +123,7 @@ export class Gateway {
 
         try {
           await client.$portal.call(service, data);
+          this.upgradeServer(url);
         } catch (_error) {
           if (
             _error instanceof Error &&
@@ -157,8 +165,8 @@ export class Gateway {
     }
 
     if (
-      REGX_SERVICE_NOT_FOUND.test(error.message) ||
-      REGX_METHOD_NOT_FOUND.test(error.message)
+      REG_EX_SERVICE_NOT_FOUND.test(error.message) ||
+      REG_EX_METHOD_NOT_FOUND.test(error.message)
     ) {
       return true;
     }
@@ -166,5 +174,72 @@ export class Gateway {
     return false;
   }
 
-  private downgradeServer(url: string): void {}
+  private adjustServerWeight(
+    url: string,
+    tend: 'down' | 'up' = 'down',
+    toWeight?: number,
+  ) {
+    if (this.config.downgrade === false) {
+      return;
+    }
+
+    let serverOrigin = this.serverMap.get(url);
+    let server = this.dynamicServerMap.get(url);
+
+    if (!serverOrigin || !server || serverOrigin.weight === server.weight) {
+      return;
+    }
+
+    if (typeof toWeight === 'number') {
+      server.weight = toWeight;
+    } else {
+      let stepCount = this.config.downgradeTolerantTime || 3;
+
+      let step = Math.ceil(serverOrigin.weight / stepCount);
+
+      if (tend === 'down') {
+        server.weight -= step;
+      } else {
+        server.weight += step;
+      }
+
+      if (server.weight < 0) {
+        server.weight = 0;
+      } else if (server.weight > serverOrigin.weight) {
+        server.weight = serverOrigin.weight;
+      }
+    }
+
+    this.generateLoadBalanceSequence();
+  }
+
+  private downgradeServer(url: string, toWeight?: number): void {
+    this.adjustServerWeight(url, 'down', toWeight);
+  }
+
+  private upgradeServer(url: string, toWeight?: number): void {
+    this.adjustServerWeight(url, 'up', toWeight);
+  }
+
+  private downgradeRevive(): void {
+    if (this.config.downgrade === false) {
+      return;
+    }
+
+    let timeLimit = this.config.downgradeDeadSleepTime || 5;
+
+    let servers = Array.from(this.dynamicServerMap.values());
+
+    for (let server of servers) {
+      if (server.weight === 0) {
+        server.sleepTimeBeforeRevive++;
+
+        if (server.sleepTimeBeforeRevive > timeLimit) {
+          this.upgradeServer(server.url);
+
+          server.sleepTimeBeforeRevive -= 2;
+        }
+      }
+    }
+  }
 }
