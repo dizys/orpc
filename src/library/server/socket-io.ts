@@ -20,4 +20,16 @@ export class SocketIOServer {
     this.socket.close();
     this.http.close();
   }
+
+  on(
+    event: 'connection',
+    listener: (socket: SocketIO.Socket) => void,
+  ): SocketIO.Namespace;
+  on(event: string, listener: Function): SocketIO.Namespace {
+    return this.socket.on(event, listener);
+  }
+
+  emit(event: string, ...args: any[]): SocketIO.Namespace {
+    return this.socket.emit(event, ...args);
+  }
 }

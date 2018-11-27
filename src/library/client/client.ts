@@ -74,12 +74,12 @@ export class Client {
 
       this.callInfoSet.set(callUUID, callInfo);
 
-      this.socketIO.socket.emit('call', service, callData);
+      this.socketIO.emit('call', service, callData);
     });
   }
 
   private initializeSocketIO(): void {
-    this.socketIO.socket.on('respond', (response: RespondData) => {
+    this.socketIO.on('respond', (response: RespondData) => {
       let {callUUID, code, body} = response;
 
       let callInfo = this.callInfoSet.get(callUUID);
