@@ -68,11 +68,6 @@ export class Client {
     options?: CallOptions,
   ): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      if (!this.socketIO.connected) {
-        reject(new Error('Server not connected'));
-        return;
-      }
-
       let callUUID = uuid();
 
       let callData: CallData =

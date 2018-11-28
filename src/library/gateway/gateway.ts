@@ -85,6 +85,10 @@ export class Gateway {
       this.serverMap.set(url, {url, client, weight});
       this.dynamicServerMap.set(url, {url, weight, sleepTimeBeforeRevive: 0});
 
+      client.$portal.socketIO.on('connection', () => {
+        this.aoc.upgradeServer(url);
+      });
+
       client.$portal.socketIO.on('disconnection', () => {
         this.aoc.downgradeServer(url, 0);
       });
