@@ -11,15 +11,15 @@ export class AOCGovernor {
     private weightAdjustCallback: Callback,
   ) {}
 
-  public downgradeServer(url: string, toWeight?: number): void {
+  downgradeServer(url: string, toWeight?: number): void {
     this.adjustServerWeight(url, 'down', toWeight);
   }
 
-  public upgradeServer(url: string, toWeight?: number): void {
+  upgradeServer(url: string, toWeight?: number): void {
     this.adjustServerWeight(url, 'up', toWeight);
   }
 
-  public reviveServer(): void {
+  reviveServer(): void {
     if (this.config.downgrade === false) {
       return;
     }
@@ -45,7 +45,7 @@ export class AOCGovernor {
     url: string,
     tend: 'down' | 'up' = 'down',
     toWeight?: number,
-  ) {
+  ): void {
     if (this.config.downgrade === false) {
       return;
     }

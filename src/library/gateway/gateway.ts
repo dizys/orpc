@@ -34,7 +34,10 @@ export class Gateway {
 
   private loadBalanceSequence!: string[];
 
-  private _sequence_index = 0;
+  /**
+   * @internal
+   */
+  private _sequenceIndex = 0;
 
   private socketIO!: SocketIOServer;
 
@@ -158,13 +161,13 @@ export class Gateway {
 
   private get sequenceIndex(): number {
     if (
-      this._sequence_index >= this.loadBalanceSequence.length &&
-      this._sequence_index < 0
+      this._sequenceIndex >= this.loadBalanceSequence.length &&
+      this._sequenceIndex < 0
     ) {
-      this._sequence_index = 0;
+      this._sequenceIndex = 0;
     }
 
-    return this._sequence_index;
+    return this._sequenceIndex;
   }
 
   private getNextItemInLoadBalanceSequence(): RunningServerInfo | undefined {
