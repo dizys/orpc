@@ -1,5 +1,5 @@
 import {RPCClient, createClient} from '../client';
-import {SocketIOServer, error} from '../server';
+import {SocketIOServer, error, success} from '../server';
 import {CallData} from '../shared';
 
 import {AOCGovernor} from './aoc-governor';
@@ -89,10 +89,14 @@ export class Gateway {
       this.dynamicServerMap.set(url, {url, weight, sleepTimeBeforeRevive: 0});
 
       client.$portal.socketIO.on('connection', () => {
+        this.log.info(`Server(${url}) connected.`);
+
         this.aoc.upgradeServer(url);
       });
 
       client.$portal.socketIO.on('disconnection', () => {
+        this.log.info(`Server(${url}) disconnected.`);
+
         this.aoc.downgradeServer(url, 0);
       });
     }
@@ -141,15 +145,29 @@ export class Gateway {
 
         let {url, client} = item;
 
+        this.log.debug(
+          `Call request(${callUUID}) is being sent to server(${url}).`,
+        );
+
         try {
-          await client.$portal.call(service, data);
+          let result = await client.$portal.call(service, data);
+
+          let response = success(callUUID, result);
+          socket.emit('respond', response);
+
+          this.log.debug(`Call request(${callUUID}) is finished successfully.`);
+
           this.aoc.upgradeServer(url);
+
+          this.log.debug(`Server(${url}) is upgraded due to call success.`);
         } catch (_error) {
           if (
             _error instanceof Error &&
             this.shouldErrorCauseDownGrade(_error)
           ) {
             this.aoc.downgradeServer(url);
+
+            this.log.debug(`Server(${url}) is downgraded due to call failure.`);
           }
 
           let response = error(callUUID, _error);

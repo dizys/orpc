@@ -80,6 +80,8 @@ export class Client {
               options,
             };
 
+      ({callUUID} = callData);
+
       let callInfo: CallInfo = {callUUID, resolve, reject};
 
       this.callInfoSet.set(callUUID, callInfo);
