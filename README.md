@@ -100,7 +100,7 @@ class FileService implements FileServicePrototype{
 
 ### Gateway
 
-`Gateway` is like a reverse proxy that takes clients' calls and sends them to one of the known servers, then gets results and feed them back to clients. To clients, a `Gateway` behaves exactly like a `RPCServer`, except its performance compete with several servers combined. `Gateway` is especially useful for high-cpu-usage services. Also, `Gateway` supports AOC governance and load balancing, so it can make sure services are highly-available and calls are well-balanced in terms of distribution to servers.
+`Gateway` is a reverse proxy that takes clients' calls and sends them to one of the known servers, then gets results and feed them back to clients. To clients, a `Gateway` behaves exactly like a `RPCServer`, except its performance compete with several servers combined. `Gateway` is especially useful for high-cpu-usage services. Also, `Gateway` supports AOC governance and load balancing, so it can make sure services are highly-available and calls are well-balanced in terms of distribution to servers.
 
 ```ts
 let config = {
