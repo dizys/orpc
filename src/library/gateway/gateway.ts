@@ -2,10 +2,10 @@ import {RPCClient, createClient} from '../client';
 import {SocketIOServer, error, success} from '../server';
 import {CallData} from '../shared';
 
-import {AOCGovernor} from './aoc-governor';
 import {GatewayConfig} from './config';
 import {evenLoadBalancer} from './load-balancer';
 import {Log} from './log';
+import {SOAGovernor} from './soa-governor';
 import {printWelcome} from './utils';
 
 const REG_EX_SERVICE_NOT_FOUND = /^Service '(.*?)' not found$/;
@@ -30,7 +30,7 @@ export class Gateway {
 
   private dynamicServerMap!: Map<string, DynamicRunningServerInfo>;
 
-  private aoc!: AOCGovernor;
+  private soa!: SOAGovernor;
 
   private loadBalanceSequence!: string[];
 
@@ -91,19 +91,19 @@ export class Gateway {
       client.$portal.socketIO.on('connection', () => {
         this.log.info(`Server(${url}) connected.`);
 
-        this.aoc.upgradeServer(url);
+        this.soa.upgradeServer(url);
       });
 
       client.$portal.socketIO.on('disconnection', () => {
         this.log.info(`Server(${url}) disconnected.`);
 
-        this.aoc.downgradeServer(url, 0);
+        this.soa.downgradeServer(url, 0);
       });
     }
   }
 
   private initializeAOCGovernance(): void {
-    this.aoc = new AOCGovernor(
+    this.soa = new SOAGovernor(
       this.config,
       this.serverMap,
       this.dynamicServerMap,
@@ -133,7 +133,7 @@ export class Gateway {
       socket.on('call', async (service: string, data: CallData) => {
         let {callUUID} = data;
 
-        this.aoc.reviveServer();
+        this.soa.reviveServer();
 
         let item = this.getNextItemInLoadBalanceSequence();
 
@@ -161,7 +161,7 @@ export class Gateway {
 
           this.log.debug(`Call request(${callUUID}) is finished successfully.`);
 
-          this.aoc.upgradeServer(url);
+          this.soa.upgradeServer(url);
 
           this.log.debug(`Server(${url}) is upgraded due to call success.`);
         } catch (_error) {
@@ -169,7 +169,7 @@ export class Gateway {
             _error instanceof Error &&
             this.shouldErrorCauseDownGrade(_error)
           ) {
-            this.aoc.downgradeServer(url);
+            this.soa.downgradeServer(url);
 
             this.log.debug(`Server(${url}) is downgraded due to call failure.`);
           }

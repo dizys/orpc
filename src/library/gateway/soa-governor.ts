@@ -3,7 +3,7 @@ import {DynamicRunningServerInfo, RunningServerInfo} from './gateway';
 
 type Callback = (...args: any[]) => any;
 
-export class AOCGovernor {
+export class SOAGovernor {
   constructor(
     private config: GatewayConfig,
     private serverMap: Map<string, RunningServerInfo>,

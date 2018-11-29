@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "The type-safe Node.js and browser RPC library built on top of socket.io. Empowered with AOC governance and load balancing.",
+  "description": "The type-safe Node.js and browser RPC library built on top of socket.io. Empowered with SOA governance and load balancing.",
   "repository": {
     "type": "git",
     "url": "https://github.com/dizys/orpc"
@@ -18,7 +18,10 @@
     "rpc",
     "socket.io",
     "type-safe",
-    "typescript"
+    "typescript",
+    "AOC",
+    "governance",
+    "load-balancing"
   ],
   "license": "MIT",
   "scripts": {
