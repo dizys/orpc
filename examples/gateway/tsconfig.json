@@ -1,10 +1,9 @@
 {
-  "extends": "../node_modules/@magicspace/configs/tsconfig.json",
+  "extends": "../../node_modules/@magicspace/configs/tsconfig.json",
   "compilerOptions": {
     "lib": ["esnext"],
-    "types": ["node", "jest"],
+    "types": ["node", "socket.io"],
     "experimentalDecorators": true,
-    "skipLibCheck": true,
 
     "rootDir": ".",
     "noEmit": true

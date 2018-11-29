@@ -38,7 +38,7 @@ export interface CallInfo {
 export class Client {
   socketIO: SocketIOClient;
 
-  callInfoSet = new Map<string, CallInfo>();
+  private callInfoSet = new Map<string, CallInfo>();
 
   constructor(url?: string) {
     this.socketIO = new SocketIOClient(url);
@@ -54,32 +54,44 @@ export class Client {
     this.socketIO.close();
   }
 
+  async call(service: string, data: CallData): Promise<any>;
   async call(
     service: string,
     method: string,
     params: any[],
     options: CallOptions,
+  ): Promise<any>;
+  async call(
+    service: string,
+    method: string | CallData,
+    params?: any[],
+    options?: CallOptions,
   ): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       let callUUID = uuid();
 
-      let callData: CallData = {
-        callUUID,
-        method,
-        params,
-        options,
-      };
+      let callData: CallData =
+        typeof method === 'object'
+          ? method
+          : {
+              callUUID,
+              method,
+              params,
+              options,
+            };
+
+      ({callUUID} = callData);
 
       let callInfo: CallInfo = {callUUID, resolve, reject};
 
       this.callInfoSet.set(callUUID, callInfo);
 
-      this.socketIO.socket.emit('call', service, callData);
+      this.socketIO.emit('call', service, callData);
     });
   }
 
   private initializeSocketIO(): void {
-    this.socketIO.socket.on('respond', (response: RespondData) => {
+    this.socketIO.on('respond', (response: RespondData) => {
       let {callUUID, code, body} = response;
 
       let callInfo = this.callInfoSet.get(callUUID);
@@ -116,6 +128,10 @@ export function createClient<Schema extends RPCSchema>(
           };
         },
       };
+
+      if (service === '$portal') {
+        return object.$portal;
+      }
 
       return new Proxy({}, methodHandler);
     },

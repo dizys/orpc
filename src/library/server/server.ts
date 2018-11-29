@@ -67,7 +67,7 @@ export class RPCServer<Schema extends RPCSchema = any> {
   }
 
   private initializeSocketIO(): void {
-    this.socketIO.socket.on('connection', async socket => {
+    this.socketIO.on('connection', async socket => {
       let socketServiceMap = this.initializeSocketServiceMap();
 
       socket.on('call', async (service: string, data: CallData) => {
@@ -80,7 +80,7 @@ export class RPCServer<Schema extends RPCSchema = any> {
         }
 
         if (!serviceInstance) {
-          let response = error(callUUID, `Service ${service} not found`);
+          let response = error(callUUID, `Service '${service}' not found`);
           socket.emit('respond', response);
 
           return;
@@ -137,5 +137,5 @@ async function executeService(
     return service[method](...params);
   }
 
-  throw new Error(`Method '${method}' not found.`);
+  throw new Error(`Method '${method}' not found`);
 }
