@@ -27,6 +27,7 @@ export function createClient<Schema extends RPCSchema>(
 export function createGateway(): Gateway {
   let config: GatewayConfig = {
     servers: [{url: 'http://localhost:8015/', weight: 1}],
+    log: {debug: true},
   };
 
   let gateway = new Gateway(config);
