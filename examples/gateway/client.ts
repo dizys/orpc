@@ -7,6 +7,7 @@ import {createClient} from '../../bld/library';
 import {IMyRPC} from './shared';
 
 async function main(): Promise<void> {
+  // URL for gateway
   let rpc = createClient<IMyRPC>('http://localhost:8014/');
 
   let result = await rpc.hello.say('dizy');
