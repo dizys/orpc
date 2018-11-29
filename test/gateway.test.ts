@@ -57,7 +57,7 @@ let rpc = createClient<IMyRPC>(8014);
 
 let server: RPCServer;
 
-createServer(myRPC, 2015)
+createServer(myRPC, 8015)
   .then(value => (server = value))
   .catch(console.error);
 
