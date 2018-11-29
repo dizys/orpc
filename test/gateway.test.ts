@@ -2,6 +2,8 @@ import {RPCSchema, RPCServer, ServicePrototype} from '../bld/library';
 
 import {createClient, createGateway, createServer} from './utils';
 
+jest.setTimeout(20000);
+
 export interface HelloServicePrototype extends ServicePrototype {
   say(name: string): string;
   getKeys(object: object): string[];
