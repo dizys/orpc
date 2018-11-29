@@ -69,6 +69,52 @@ test('simplest service method call', async () => {
   expect(result).toBe('Hello, Dizy!');
 });
 
+test('method call with object parameter', async () => {
+  let keys = await rpc.hello.getKeys({
+    name: 'Dizy',
+    age: 20,
+    gender: 'male',
+  });
+
+  expect(keys).toEqual(['name', 'age', 'gender']);
+});
+
+test('method return object', async () => {
+  let object = await rpc.hello.wrapData('Dizy', 20, 'male');
+
+  expect(object).toEqual({
+    name: 'Dizy',
+    age: 20,
+    gender: 'male',
+  });
+});
+
+test('method transfer Buffer', async () => {
+  let buffer = Buffer.alloc(100, 'hooray!');
+
+  let result = await rpc.hello.bufferEcho(buffer);
+
+  expect(result).toEqual(buffer);
+});
+
+test('remote error throwing', async () => {
+  let message: string | undefined;
+
+  try {
+    await rpc.hello.error('Remote error');
+  } catch (error) {
+    message = error.message;
+  }
+
+  expect(message).toBe('Remote error');
+});
+
+test('method implemented as promise', async () => {
+  let result = await rpc.hello.sayPromise('Dizy');
+
+  expect(result).toBe('Hello, Dizy!');
+});
+
 afterAll(() => {
   rpc.$portal.close();
 
