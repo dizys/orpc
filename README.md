@@ -127,7 +127,7 @@ gateway.start(8014);
 
   - `start(port?: number, hostname?: string): void`
 
-    `port` defaults to `80`, hostname defaults to `'localhost'`
+    `port` defaults to `80`, `hostname` defaults to `'localhost'`
 
   - `stop(): void`
 
@@ -210,7 +210,7 @@ let config: GatewayConfig = {
 
   - `start(port?: number, hostname?: string): void`
 
-    Start gateway server. `port` defaults to `80`, hostname defaults to `'localhost'`
+    Start gateway server. `port` defaults to `80`, `hostname` defaults to `'localhost'`
 
   - `stop(): void`
 
