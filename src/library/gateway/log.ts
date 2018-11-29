@@ -6,7 +6,7 @@ export class Log {
   constructor(private config?: LogConfig) {}
 
   get enabled(): boolean {
-    return !this.config || this.config.enable === true;
+    return !this.config || this.config.enable !== false;
   }
 
   log(type: LogType, ...args: any[]): void {

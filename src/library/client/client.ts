@@ -127,6 +127,10 @@ export function createClient<Schema extends RPCSchema>(
         },
       };
 
+      if (service === '$portal') {
+        return object.$portal;
+      }
+
       return new Proxy({}, methodHandler);
     },
   };
