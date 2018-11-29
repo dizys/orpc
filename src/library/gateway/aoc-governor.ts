@@ -24,6 +24,7 @@ export class AOCGovernor {
       return;
     }
 
+    // Default downgradeDeadSleepTime
     let timeLimit = this.config.downgradeDeadSleepTime || 5;
 
     let servers = Array.from(this.dynamicServerMap.values());
@@ -60,6 +61,7 @@ export class AOCGovernor {
     if (typeof toWeight === 'number') {
       server.weight = toWeight;
     } else {
+      // Default downgradeTolerantTime
       let stepCount = this.config.downgradeTolerantTime || 3;
 
       let step = Math.ceil(serverOrigin.weight / stepCount);
