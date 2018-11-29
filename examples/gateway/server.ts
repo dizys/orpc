@@ -17,9 +17,17 @@ let myRPC: IMyRPC = {
 };
 
 async function main(): Promise<void> {
-  let server = new RPCServer(myRPC);
+  let server1 = new RPCServer(myRPC);
 
-  server.start(8015);
+  server1.start(8015);
+
+  let server2 = new RPCServer(myRPC);
+
+  server2.start(8016);
+
+  let server3 = new RPCServer(myRPC);
+
+  server3.start(8017);
 }
 
 main().catch(console.error);

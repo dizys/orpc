@@ -1,4 +1,9 @@
-import {RPCSchema, RPCServer, ServicePrototype} from '../bld/library';
+import {
+  RPCSchema,
+  RPCServer,
+  ServicePrototype,
+  smoothWRRLoadBalancer,
+} from '../bld/library';
 
 import {createClient, createGateway, createServer} from './utils';
 
@@ -53,36 +58,37 @@ let myRPC: IMyRPC = {
   hello: new HelloService(),
 };
 
-let rpc = createClient<IMyRPC>(8016);
+let rpc = createClient<IMyRPC>(8020);
 
 let server1: RPCServer;
 
-createServer(myRPC, 8017)
+createServer(myRPC, 8021)
   .then(value => (server1 = value))
   .catch(console.error);
 
 let server2: RPCServer;
 
-createServer(myRPC, 8018)
+createServer(myRPC, 8022)
   .then(value => (server2 = value))
   .catch(console.error);
 
 let server3: RPCServer;
 
-createServer(myRPC, 8019)
+createServer(myRPC, 8023)
   .then(value => (server3 = value))
   .catch(console.error);
 
 let gateway = createGateway(
   {
     servers: [
-      {url: 'http://localhost:8017/'},
-      {url: 'http://localhost:8018/'},
-      {url: 'http://localhost:8019/'},
+      {url: 'http://localhost:8021/', weight: 10},
+      {url: 'http://localhost:8022/', weight: 3},
+      {url: 'http://localhost:8023/', weight: 4},
     ],
+    loadBalancer: smoothWRRLoadBalancer,
     log: {debug: true},
   },
-  8016,
+  8020,
 );
 
 test('simplest service method call', async () => {

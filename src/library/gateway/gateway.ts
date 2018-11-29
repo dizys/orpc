@@ -138,6 +138,10 @@ export class Gateway {
         let item = this.getNextItemInLoadBalanceSequence();
 
         if (!item) {
+          this.log.debug(
+            `Call request(${callUUID}) failed for no available server.`,
+          );
+
           let response = error(callUUID, `No available server`);
           socket.emit('respond', response);
           return;
@@ -179,7 +183,7 @@ export class Gateway {
 
   private get sequenceIndex(): number {
     if (
-      this._sequenceIndex >= this.loadBalanceSequence.length &&
+      this._sequenceIndex >= this.loadBalanceSequence.length ||
       this._sequenceIndex < 0
     ) {
       this._sequenceIndex = 0;
@@ -188,12 +192,19 @@ export class Gateway {
     return this._sequenceIndex;
   }
 
+  private moveSequenceIndexToNext(): void {
+    this._sequenceIndex++;
+  }
+
   private getNextItemInLoadBalanceSequence(): RunningServerInfo | undefined {
     if (!this.loadBalanceSequence.length) {
       return undefined;
     }
 
     let url = this.loadBalanceSequence[this.sequenceIndex];
+
+    this.moveSequenceIndexToNext();
+
     return this.serverMap.get(url);
   }
 

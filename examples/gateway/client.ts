@@ -13,6 +13,30 @@ async function main(): Promise<void> {
   let result = await rpc.hello.say('dizy');
 
   console.log(result);
+
+  result = await rpc.hello.say('dizy2');
+
+  console.log(result);
+
+  result = await rpc.hello.say('dizy3');
+
+  console.log(result);
+
+  result = await rpc.hello.say('dizy4');
+
+  console.log(result);
+
+  result = await rpc.hello.say('dizy5');
+
+  console.log(result);
+
+  result = await rpc.hello.say('dizy6');
+
+  console.log(result);
+
+  result = await rpc.hello.say('dizy7');
+
+  console.log(result);
 }
 
 main().catch(console.error);
